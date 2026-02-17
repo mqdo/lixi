@@ -1,101 +1,374 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tết Lucky Money Envelope Game</title>
+    <title>🧧 Lì Xì Tết 🧧</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #b30000, #ff4d4d);
+            color: white;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f9f9f9;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        input[type='number'] {
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
             width: 100%;
-            max-width: 300px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #28a745;
-            color: white;
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
             border: none;
-            border-radius: 5px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         button:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
-        @media (max-width: 600px) {
-            body {
-                flex-direction: column;
-                justify-content: flex-start;
-                padding: 20px;
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .envelope {
+            width: 250px;
+            height: 320px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #c40000, #ff0000);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.6s;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            display: none;
+            border: 3px solid #ffcc00;
+        }
+
+        .envelope::before {
+            content: "🧧";
+            font-size: 120px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope.open {
+            transform: rotateY(180deg) scale(1.1);
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            min-height: 50px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
             }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .remaining {
+            font-size: 14px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        .error {
+            color: #ffcccc;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #90EE90;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Tết Lucky Money Envelope Game</h1>
-        <p>Guess the amount of lucky money received:</p>
-        <input type="number" id="guessAmount" placeholder="Enter your guess" />
-        <button id="submitGuess">Submit Guess</button>
-        <h2 id="result"></h2>
-    </div>
-    <script>
-        const pool = [200, 100, 50, 50, 50, 30, 20];
-        const resultElement = document.getElementById('result');
-        const submitButton = document.getElementById('submitGuess');
 
-        submitButton.addEventListener('click', () => {
-            const userGuess = document.getElementById('guessAmount').value;
-            validateInput(userGuess);
+<div class="container">
+    <h1>🧧 LÌ XÌ TẾT 🧧</h1>
+    <p class="subtitle">Chúc mừng năm mới!</p>
+
+    <div id="inputSection">
+        <div class="form-group">
+            <label for="username">Nhập tên của bạn:</label>
+            <input 
+                id="username" 
+                type="text" 
+                placeholder="Ví dụ: Hoa Hương" 
+                maxlength="50"
+            />
+        </div>
+        <button onclick="validateAndStartGame()">Bắt đầu</button>
+        <div class="remaining">
+            <p>Số lì xì còn lại: <strong id="remainingCount">7</strong></p>
+            <p>Tổng tiền còn: <strong id="remainingAmount">500k</strong></p>
+        </div>
+    </div>
+
+    <div id="gameSection" class="hidden">
+        <p style="font-size: 24px; margin-bottom: 20px;">
+            Xin chào <strong id="playerName"></strong>! 👋
+        </p>
+        <p style="margin-bottom: 20px;">Bấm vào bao để nhận lì xì!</p>
+        
+        <div class="envelope" id="envelope" onclick="openEnvelope()"></div>
+        
+        <div id="result" class="result"></div>
+
+        <button onclick="resetGame()" style="display: none;" id="nextBtn">Tiếp theo →</button>
+    </div>
+</div>
+
+<audio id="openSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-small-sweep-transition-166.mp3"></audio>
+<audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+<script>
+    // 🎁 LÌ XÌ POOL - Edit the amounts here
+    let pool = [200, 100, 50, 50, 50, 30, 20];
+    let players = [];
+    let currentPlayer = "";
+    let isOpened = false;
+
+    function validateAndStartGame() {
+        const name = document.getElementById("username").value.trim();
+
+        // Validate input - at least 2 characters
+        if (!name) {
+            alert("Vui lòng nhập tên!");
+            return;
+        }
+
+        if (name.length < 2 || name.length > 50) {
+            alert("Tên phải từ 2 đến 50 ký tự!");
+            return;
+        }
+
+        // Check if player already played
+        if (players.includes(name)) {
+            alert("Bạn đã bốc lì xì rồi! 🎉");
+            return;
+        }
+
+        // Check if pool is empty
+        if (pool.length === 0) {
+            alert("Hết lì xì rồi! 😢");
+            return;
+        }
+
+        startGame(name);
+    }
+
+    function startGame(name) {
+        currentPlayer = name;
+        players.push(name);
+
+        // Hide input section, show game section
+        document.getElementById("inputSection").classList.add("hidden");
+        document.getElementById("gameSection").classList.remove("hidden");
+        document.getElementById("playerName").textContent = name;
+        
+        // Show envelope
+        const envelope = document.getElementById("envelope");
+        envelope.classList.remove("open");
+        envelope.style.display = "block";
+        
+        // Reset result
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("nextBtn").style.display = "none";
+        
+        isOpened = false;
+    }
+
+    function openEnvelope() {
+        if (isOpened) return;
+
+        if (pool.length === 0) {
+            document.getElementById("result").innerHTML = '<span class="error">❌ Hết lì xì!</span>';
+            return;
+        }
+
+        isOpened = true;
+
+        // Play open sound
+        const sound = document.getElementById("openSound");
+        sound.currentTime = 0;
+        sound.play().catch(() => console.log("Audio play failed"));
+
+        // Animate envelope opening
+        const envelope = document.getElementById("envelope");
+        envelope.classList.add("open");
+
+        // Get random prize after animation
+        setTimeout(() => {
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            const prize = pool[randomIndex];
+
+            // Remove from pool
+            pool.splice(randomIndex, 1);
+
+            // Play win sound
+            const winSound = document.getElementById("winSound");
+            winSound.currentTime = 0;
+            winSound.play().catch(() => console.log("Win sound failed"));
+
+            // Show result
+            document.getElementById("result").innerHTML = 
+                `<span class="success">🎉 ${prize}k 💰</span>`;
+
+            // Launch confetti
+            launchConfetti(prize);
+
+            // Update remaining counts
+            updateRemaining();
+
+            // Show next button or end message
+            if (pool.length > 0) {
+                document.getElementById("nextBtn").style.display = "block";
+            } else {
+                setTimeout(() => {
+                    document.getElementById("result").innerHTML += 
+                        '<p style="font-size: 20px; margin-top: 20px;">🎊 Tất cả lì xì đã hết! 🎊</p>';
+                }, 1000);
+            }
+        }, 600);
+    }
+
+    function updateRemaining() {
+        document.getElementById("remainingCount").textContent = pool.length;
+        const total = pool.reduce((a, b) => a + b, 0);
+        document.getElementById("remainingAmount").textContent = total + "k";
+    }
+
+    function resetGame() {
+        if (pool.length === 0) {
+            alert("Tất cả lì xì đã kết thúc! Cảm ơn các bạn đã tham gia! 🙏");
+            location.reload();
+            return;
+        }
+
+        // Show input section again
+        document.getElementById("gameSection").classList.add("hidden");
+        document.getElementById("inputSection").classList.remove("hidden");
+        
+        // Clear input
+        document.getElementById("username").value = "";
+        document.getElementById("username").focus();
+    }
+
+    function launchConfetti(prize) {
+        let particles = 150;
+
+        if (prize >= 200) particles = 400;
+        else if (prize >= 100) particles = 250;
+
+        confetti({
+            particleCount: particles,
+            spread: 80,
+            origin: { y: 0.6 }
         });
 
-        function validateInput(value) {
-            const guess = parseInt(value, 10);
-            if (isNaN(guess) || guess <= 0) {
-                resultElement.textContent = 'Please enter a valid positive number!';
-                return;
-            }
-            checkGuess(guess);
-        }
+        setTimeout(() => {
+            confetti({
+                particleCount: particles,
+                spread: 120,
+                origin: { y: 0.4 }
+            });
+        }, 400);
+    }
 
-        function checkGuess(guess) {
-            const total = pool.reduce((acc, curr) => acc + curr, 0);
-            if (guess === total) {
-                celebrate();
-            } else {
-                resultElement.textContent = `Wrong! The total is ${total}. Keep guessing!`;
-            }
-        }
+    // Initialize on page load
+    window.onload = function() {
+        updateRemaining();
+        document.getElementById("username").focus();
+    };
+</script>
 
-        function celebrate() {
-            resultElement.textContent = 'Congratulations! You guessed correctly! 🎉';
-            // Start confetti animation
-            startConfetti();
-        }
-
-        function startConfetti() {
-            // Confetti logic here (using a library)
-            console.log('Confetti effects would trigger here!');
-        }
-    </script>
 </body>
 </html>
