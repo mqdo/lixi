@@ -1,0 +1,3 @@
+# Ignoring sensitive configuration files
+*.env
+config/*.json
