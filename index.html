@@ -3,44 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lì Xì Application</title>
-    <script>
-        // Improved input validation function
-        function validateInput(input) {
-            const regex = /^[0-9]+$/; // only numbers are allowed
-            return regex.test(input);
+    <title>Tết Lucky Money Envelope Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+            margin: 0;
         }
-
-        function handleSubmit() {
-            const userInput = document.getElementById('inputField').value;
-            // Validate user input
-            if (!validateInput(userInput)) {
-                alert('Invalid input. Please enter a number.');
-                return;
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type='number'] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        @media (max-width: 600px) {
+            body {
+                flex-direction: column;
+                justify-content: flex-start;
+                padding: 20px;
             }
-            // Further processing...
-            alert('Input is valid: ' + userInput);
         }
-
-        // Error handling example
-        function performAction() {
-            try {
-                // Simulate an action that may fail
-                throw new Error('Simulated error');
-            } catch (error) {
-                console.error('An error occurred:', error);
-                alert('An error occurred while performing the action. Please try again later.');
-            }
-        }
-    </script>
+    </style>
 </head>
 <body>
-    <h1>Lì Xì Application</h1>
-    <form onsubmit="handleSubmit(); return false;">
-        <label for="inputField">Enter Amount:</label>
-        <input type="text" id="inputField" required />
-        <button type="submit">Submit</button>
-    </form>
-    <button onclick="performAction()">Perform Action</button>
+    <div class="container">
+        <h1>Tết Lucky Money Envelope Game</h1>
+        <p>Guess the amount of lucky money received:</p>
+        <input type="number" id="guessAmount" placeholder="Enter your guess" />
+        <button id="submitGuess">Submit Guess</button>
+        <h2 id="result"></h2>
+    </div>
+    <script>
+        const pool = [200, 100, 50, 50, 50, 30, 20];
+        const resultElement = document.getElementById('result');
+        const submitButton = document.getElementById('submitGuess');
+
+        submitButton.addEventListener('click', () => {
+            const userGuess = document.getElementById('guessAmount').value;
+            validateInput(userGuess);
+        });
+
+        function validateInput(value) {
+            const guess = parseInt(value, 10);
+            if (isNaN(guess) || guess <= 0) {
+                resultElement.textContent = 'Please enter a valid positive number!';
+                return;
+            }
+            checkGuess(guess);
+        }
+
+        function checkGuess(guess) {
+            const total = pool.reduce((acc, curr) => acc + curr, 0);
+            if (guess === total) {
+                celebrate();
+            } else {
+                resultElement.textContent = `Wrong! The total is ${total}. Keep guessing!`;
+            }
+        }
+
+        function celebrate() {
+            resultElement.textContent = 'Congratulations! You guessed correctly! 🎉';
+            // Start confetti animation
+            startConfetti();
+        }
+
+        function startConfetti() {
+            // Confetti logic here (using a library)
+            console.log('Confetti effects would trigger here!');
+        }
+    </script>
 </body>
 </html>
