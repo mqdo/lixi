@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lì Xì Application</title>
+    <script>
+        // Improved input validation function
+        function validateInput(input) {
+            const regex = /^[0-9]+$/; // only numbers are allowed
+            return regex.test(input);
+        }
+
+        function handleSubmit() {
+            const userInput = document.getElementById('inputField').value;
+            // Validate user input
+            if (!validateInput(userInput)) {
+                alert('Invalid input. Please enter a number.');
+                return;
+            }
+            // Further processing...
+            alert('Input is valid: ' + userInput);
+        }
+
+        // Error handling example
+        function performAction() {
+            try {
+                // Simulate an action that may fail
+                throw new Error('Simulated error');
+            } catch (error) {
+                console.error('An error occurred:', error);
+                alert('An error occurred while performing the action. Please try again later.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Lì Xì Application</h1>
+    <form onsubmit="handleSubmit(); return false;">
+        <label for="inputField">Enter Amount:</label>
+        <input type="text" id="inputField" required />
+        <button type="submit">Submit</button>
+    </form>
+    <button onclick="performAction()">Perform Action</button>
+</body>
+</html>
